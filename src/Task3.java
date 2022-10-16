@@ -1,9 +1,8 @@
 import javax.swing.*;
-import java.awt.*;
 
 public class Task3 extends Task {
-    public Task3(JFrame jFrame, Container cp) {
-        super(jFrame, cp);
+    public Task3(JFrame jFrame) {
+        super(jFrame);
     }
 
     @Override

@@ -1,4 +1,4 @@
-﻿<html>
+<html>
 <p style="font-size:15;font-family:'-윤고딕340'">
 Task4 : 섭씨온도를 화씨온도로 변환하는 프로그램을 작성하여라<br>
 Date : 03/06/2019<br><br>

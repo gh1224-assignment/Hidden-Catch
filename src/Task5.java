@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -45,8 +44,8 @@ public class Task5 extends Task {
     int wrongNum = 0;
 
 
-    public Task5(JFrame jFrame, Container cp) {
-        super(jFrame, cp);
+    public Task5(JFrame jFrame) {
+        super(jFrame);
 
         intro.setBounds(280, 50, 800, 405);
 

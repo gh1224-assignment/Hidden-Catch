@@ -1,4 +1,4 @@
-﻿<html>
+<html>
 <p style="font-size:15;font-family:'-윤고딕340'">
 Task5 : 금오공대 속 틀린 그림을 찾아라!<br>
 Date : 03/06/2019<br><br>

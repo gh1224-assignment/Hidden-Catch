@@ -5,9 +5,9 @@ public abstract class Task {
     protected JFrame jFrame;
     protected Container cp;
 
-    public Task(JFrame jFrame, Container cp) {
+    public Task(JFrame jFrame) {
         this.jFrame = jFrame;
-        this.cp = cp;
+        this.cp = jFrame.getContentPane();
     }
 
     abstract int getFrameWidth();

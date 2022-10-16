@@ -1,23 +1,17 @@
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.*;
 
 public class TeamProject extends JFrame {
-    Container cp = getContentPane();
-    Task[] tasks = {
-            new Task1(this, cp),
-            new Task2(this, cp),
-            new Task3(this, cp),
-            new Task4(this, cp),
-            new Task5(this, cp)};
-    String[] taskExp = getExplanations();
+    private Container cp = getContentPane();
+    private Task[] tasks = {
+            new Task1(this),
+            new Task2(this),
+            new Task3(this),
+            new Task4(this),
+            new Task5(this)};
+    private String[] taskExp = getExplanations();
 
     public static void main(String[] args) {
         new TeamProject();
@@ -29,6 +23,28 @@ public class TeamProject extends JFrame {
         setSize(400, 400);
         setMenu();
         setVisible(true);
+    }
+
+    private String[] getExplanations() {
+        String[] taskExpPath = {
+                "Explanation/task1Exp.txt",
+                "Explanation/task2Exp.txt",
+                "Explanation/task3Exp.txt",
+                "Explanation/task4Exp.txt",
+                "Explanation/task5Exp.txt"
+        };
+
+        String[] taskExp = new String[taskExpPath.length];
+        for (int i = 0; i < taskExpPath.length; i++) {
+            try (InputStream is = ResourceUtil.getStream(taskExpPath[i])) {
+                byte[] data = new byte[is.available()];
+                is.read(data);
+                taskExp[i] = new String(data, "utf-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return taskExp;
     }
 
     private void setMenu() {
@@ -43,6 +59,25 @@ public class TeamProject extends JFrame {
 
         JMenuItem[][] menuItem = new JMenuItem[menuTitle.length][2];
         String[] menuItemTitle = {"과제설명", "과제실행", "화면 지우기", "종료"};
+        ActionListener menuListener = e -> {
+            removeScreen();
+
+            Object obj = e.getSource();
+            if (obj == menuItem[5][1])
+                System.exit(0);
+            for (int k = 0; k < menuTitle.length - 1; k++) {
+                if (obj == menuItem[k][0]) {
+                    showExplanation(k);
+                    break;
+                }
+                if (obj == menuItem[k][1]) {
+                    tasks[k].doTask();
+                    break;
+                }
+            }
+            setVisible(true);
+        };
+
         for (int i = 0; i < menuTitle.length; i++) {
             for (int j = 0; j < 2; j++) {
                 if (i == menuTitle.length - 1)
@@ -50,69 +85,20 @@ public class TeamProject extends JFrame {
                 else
                     menuItem[i][j] = new JMenuItem(menuItemTitle[j]);
                 menu[i].add(menuItem[i][j]);
-
-                menuItem[i][j].addActionListener(e -> {
-                    removeScreen();
-
-                    Object obj = e.getSource();
-                    if (obj == menuItem[5][1])
-                        System.exit(0);
-                    for (int k = 0; k < menuTitle.length - 1; k++) {
-                        if (obj == menuItem[k][0]) {
-                            setSize(700, 400);
-                            cp.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
-                            cp.add(new JLabel(taskExp[k]));
-                            break;
-                        }
-                        if (obj == menuItem[k][1]) {
-                            tasks[k].doTask();
-                            break;
-                        }
-                    }
-                    setVisible(true);
-                });
+                menuItem[i][j].addActionListener(menuListener);
             }
         }
-    }
-
-    private String[] getExplanations() {
-        String[] taskExpPath = {
-                "Explanation/task1Exp.txt",
-                "Explanation/task2Exp.txt",
-                "Explanation/task3Exp.txt",
-                "Explanation/task4Exp.txt",
-                "Explanation/task5Exp.txt"
-        };
-        InputStream in = null;
-        String[] taskExp = new String[taskExpPath.length];
-
-        for (int i = 0; i < 5; i++) {
-            try {
-                in = getClass().getClassLoader().getResourceAsStream(taskExpPath[i]);
-                byte[] data = new byte[in.available()];
-                in.read(data);
-                taskExp[i] = new String(data, "utf-8").replaceFirst("﻿", "");
-            } catch (Exception e) {
-                System.out.println("[ERROR] 에러가 발생했습니다. >> " + taskExpPath[i]);
-                e.printStackTrace();
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                        in = null;
-                    } catch (IOException e) {
-                        System.out.println("[ERROR] 파일 닫기 실패");
-                    }
-                }
-            }
-        }
-
-        return taskExp;
     }
 
     private void removeScreen() {
         cp.setBackground(null);
         cp.removeAll();
         cp.repaint();
+    }
+
+    private void showExplanation(int idx) {
+        setSize(700, 400);
+        cp.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        cp.add(new JLabel(taskExp[idx]));
     }
 }

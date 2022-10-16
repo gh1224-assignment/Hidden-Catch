@@ -2,8 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Task2 extends Task {
-    public Task2(JFrame jFrame, Container cp) {
-        super(jFrame, cp);
+    public Task2(JFrame jFrame) {
+        super(jFrame);
     }
 
     @Override

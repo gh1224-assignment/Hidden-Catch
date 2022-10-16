@@ -1,4 +1,4 @@
-﻿<html>
+<html>
 <p style="font-size:15;font-family:'-윤고딕340'">
 Task2 : 피자 주문 인터페이스를 만들어라<br>
 Date : 03/06/2019<br><br>
