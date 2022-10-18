@@ -30,7 +30,20 @@ public class Task5 extends Task {
     private JLabel[] circle2 = new JLabel[5];
 
     private GameState gameState = new GameState();
-    private MouseAdapter answerChecker;
+    private MouseAdapter answerChecker = new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            if (!isOnImg(x, y))
+                return;
+            int bound = matchBound(x, y);
+            if (bound == -1)
+                wrong();
+            else
+                correct(bound, x, y);
+        }
+    };
 
     public Task5(JFrame jFrame) {
         super(jFrame);
@@ -58,41 +71,22 @@ public class Task5 extends Task {
             showNewGame();
         });
         retry.addActionListener(e -> showIntro());
+    }
 
-        answerChecker = new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-                if (!isOnImg(x, y))
-                    return;
+    @Override
+    int getFrameWidth() {
+        return 1360;
+    }
 
-                for (int i = 0; i < 5; i++) {
-                    if (!isInBound(ANSWER_POS[gameState.getLevel()][i], x, y))
-                        continue;
-                    if (gameState.hasFound(i))
-                        return;
+    @Override
+    int getFrameHeight() {
+        return 730;
+    }
 
-                    gameState.correct(i);
-
-                    int correctIdx = gameState.getCorrectNum() - 1;
-                    circle[correctIdx].setLocation(x - 25, y - 25);
-                    circle[correctIdx].setVisible(true);
-                    circle2[correctIdx].setLocation(x - 25 - IMG_W / 2, y - 25);
-                    circle2[correctIdx].setVisible(true);
-
-                    if (gameState.isWin())
-                        showWin();
-
-                    return;
-                }
-
-                gameState.wrong();
-                heart[5 - gameState.getWrongNum()].setVisible(false);
-                if (gameState.isLose())
-                    showLose();
-            }
-        };
+    @Override
+    void addComponents() {
+        allComponents.stream().forEach(cp::add);
+        showIntro();
     }
 
     private void showIntro() {
@@ -140,20 +134,43 @@ public class Task5 extends Task {
         cp.removeMouseListener(answerChecker);
     }
 
-    @Override
-    int getFrameWidth() {
-        return 1360;
+    private void correct(int bound, int x, int y) {
+        gameState.correct(bound);
+
+        int correctIdx = gameState.getCorrectNum() - 1;
+        circle[correctIdx].setLocation(x - 25, y - 25);
+        circle[correctIdx].setVisible(true);
+        circle2[correctIdx].setLocation(x - 25 - IMG_W / 2, y - 25);
+        circle2[correctIdx].setVisible(true);
+
+        if (gameState.isWin())
+            showWin();
     }
 
-    @Override
-    int getFrameHeight() {
-        return 730;
+    private void wrong() {
+        gameState.wrong();
+        heart[5 - gameState.getWrongNum()].setVisible(false);
+        if (gameState.isLose())
+            showLose();
     }
 
-    @Override
-    void addComponents() {
-        allComponents.stream().forEach(cp::add);
-        showIntro();
+    private int matchBound(int x, int y) {
+        for (int i = 0; i < 5; i++) {
+            int[] p = ANSWER_POS[gameState.getLevel()][i];
+            if (p[0] + IMG_X <= x && x <= p[1] + IMG_X
+                    && p[2] + IMG_Y <= y && y <= p[3] + IMG_Y
+                    && !gameState.hasFound(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean isOnImg(int x, int y) {
+        return IMG_X + IMG_W / 2 <= x
+                && x <= IMG_X + IMG_W
+                && IMG_Y <= y
+                && y <= IMG_Y + IMG_H;
     }
 
     private JLabel createImgLabel(String path, int x, int y, int width, int height) {
@@ -171,19 +188,5 @@ public class Task5 extends Task {
         button.setFocusPainted(false);
         allComponents.add(button);
         return button;
-    }
-
-    private static boolean isInBound(int[] p, int x, int y) {
-        return p[0] + IMG_X <= x
-                && x <= p[1] + IMG_X
-                && p[2] + IMG_Y <= y
-                && y <= p[3] + IMG_Y;
-    }
-
-    private static boolean isOnImg(int x, int y) {
-        return IMG_X + IMG_W / 2 <= x
-                && x <= IMG_X + IMG_W
-                && IMG_Y <= y
-                && y <= IMG_Y + IMG_H;
     }
 }
